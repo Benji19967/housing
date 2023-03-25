@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "housing"
+version = "0.1.0"
+description = "TDD best practices"
+authors = [ "Benjamin Labrecque" ]
+packages = [
+    { include = "housing" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+typer = "^0.7.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.1"
+
+[tool.mypy]
+files = "housing"
+strict = true
+namespace_packages = true
+explicit_package_bases = true
