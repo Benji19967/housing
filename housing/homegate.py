@@ -2,6 +2,7 @@ import csv
 import datetime
 import pathlib
 from typing import Any, Iterable, List
+from housing.config import settings
 
 import pendulum
 import requests
@@ -14,7 +15,7 @@ RADIUS_METERS = 2000
 LOCATION = "city-zug"
 LISTINGS_URL = f"https://www.homegate.ch/rent/real-estate/{LOCATION}/matching-list?ep={{page_number}}&be={RADIUS_METERS}"
 
-CSV_FILENAME = "homegate.csv"
+CSV_FILEPATH = settings.HOMEGATE_CSV_FILEPATH
 
 
 def parse_datetime(dt: str) -> DateTime:
@@ -103,7 +104,7 @@ def get_new_listings(new_row: Row, previous_row: Row) -> List[Listing]:
 
 
 def main() -> None:
-    current_rows = read_rows(CSV_FILENAME)
+    current_rows = read_rows(CSV_FILEPATH)
 
     listings = fetch_listings()
 
@@ -112,13 +113,13 @@ def main() -> None:
     )
 
     if not current_rows:
-        write_row(filename=CSV_FILENAME, row=new_row)
+        write_row(filename=CSV_FILEPATH, row=new_row)
         return
 
     new_listings = get_new_listings(new_row=new_row, previous_row=current_rows[-1])
     if new_listings:
         print(f"Found new listings: {new_listings}")
-        write_row(filename=CSV_FILENAME, row=new_row)
+        write_row(filename=CSV_FILEPATH, row=new_row)
 
 
 if __name__ == "__main__":
