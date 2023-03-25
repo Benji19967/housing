@@ -1,19 +1,26 @@
-from datetime import datetime
-import requests
-from bs4 import BeautifulSoup
 import csv
-import pendulum
-from pydantic import BaseModel
 import datetime
+import pathlib
 from typing import Any, Iterable, List
 
-import pathlib
+import pendulum
+import requests
+from bs4 import BeautifulSoup
+from pydantic import BaseModel
+from pendulum import parse as pendulum_parse  # type: ignore
+from pendulum.datetime import DateTime
 
 RADIUS_METERS = 2000
 LOCATION = "city-zug"
 LISTINGS_URL = f"https://www.homegate.ch/rent/real-estate/{LOCATION}/matching-list?ep={{page_number}}&be={RADIUS_METERS}"
 
 CSV_FILENAME = "homegate.csv"
+
+
+def parse_datetime(dt: str) -> DateTime:
+    timestamp = pendulum_parse(dt)
+    assert isinstance(timestamp, DateTime)
+    return timestamp
 
 
 class Listing(BaseModel):
@@ -36,7 +43,7 @@ class Row(BaseModel):
 
     @classmethod
     def from_cvs(cls, row: List[str]) -> "Row":
-        timestamp = pendulum.parse(row[0])
+        timestamp = parse_datetime(dt=row[0])
         num_listings = int(row[1])
         listings = [Listing(id=int(listing_id)) for listing_id in row[2:]]
         return Row(
@@ -69,7 +76,10 @@ def fetch_listings() -> List[Listing]:
         html_text = requests.get(LISTINGS_URL.format(page_number=page_number)).text
         soup = BeautifulSoup(html_text, "html.parser")
 
-        count = 0
+        count_for_page = 0
+
+        if not soup.body:
+            raise ValueError("Could not find body")
 
         a_top = soup.body.find_all("a", {"data-test": "result-list-item"}, href=True)
         result_list_items_regular = soup.body.find_all(
@@ -80,8 +90,8 @@ def fetch_listings() -> List[Listing]:
         for a in a_top + a_regular:
             listing_id = a["href"].replace("/rent/", "")
             listings.append(Listing(id=listing_id))
-            count += 1
-        if count == 0:
+            count_for_page += 1
+        if count_for_page == 0:
             break
 
     return listings
@@ -92,7 +102,7 @@ def get_new_listings(new_row: Row, previous_row: Row) -> List[Listing]:
     return list(new_listings)
 
 
-def main():
+def main() -> None:
     current_rows = read_rows(CSV_FILENAME)
 
     listings = fetch_listings()
