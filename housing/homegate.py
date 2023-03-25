@@ -104,6 +104,8 @@ def get_new_listings(new_row: Row, previous_row: Row) -> List[Listing]:
 
 
 def main() -> None:
+    print(f"{pendulum.now()}: checking for new listings on homegate.")
+
     current_rows = read_rows(CSV_FILEPATH)
 
     listings = fetch_listings()
