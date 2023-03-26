@@ -36,14 +36,14 @@ class Row(BaseModel):
     num_listings: int
     listings: List[Listing]
 
-    def to_cvs(self) -> Iterable[Any]:
+    def to_csv(self) -> Iterable[Any]:
         yield str(self.timestamp)
         yield self.num_listings
         for listing in self.listings:
             yield listing.id
 
     @classmethod
-    def from_cvs(cls, row: List[str]) -> "Row":
+    def from_csv(cls, row: List[str]) -> "Row":
         timestamp = parse_datetime(dt=row[0])
         num_listings = int(row[1])
         listings = [Listing(id=int(listing_id)) for listing_id in row[2:]]
@@ -61,13 +61,13 @@ def read_rows(filename: str) -> List[Row]:
 
     with open(filename, newline="") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
-        return [Row.from_cvs(row=row) for row in reader]
+        return [Row.from_csv(row=row) for row in reader]
 
 
 def write_row(filename: str, row: Row) -> None:
     with open(filename, "a", newline="") as csvfile:
         writer = csv.writer(csvfile, delimiter=",")
-        writer.writerow(row.to_cvs())
+        writer.writerow(row.to_csv())
 
 
 def fetch_listings() -> List[Listing]:
