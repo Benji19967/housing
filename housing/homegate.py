@@ -1,28 +1,21 @@
-import time
-from typing import List
-
-import cloudscraper
-import pendulum
-import requests
-import typer
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-
-from housing.common import Listing, Row, get_new_listings, read_rows, write_row
-from housing.config import settings
-
-RADIUS_METERS = 2000
-LOCATION = "city-zug"
-LISTINGS_URL = f"https://www.homegate.ch/rent/real-estate/{LOCATION}/matching-list?ep={{page_number}}&be={RADIUS_METERS}"
-
-CSV_FILEPATH = settings.HOMEGATE_CSV_FILEPATH
-
-housing = typer.Typer()
-
 import undetected_chromedriver as uc
+from selenium.webdriver.common.by import By
+import time
+from selenium.webdriver.support import expected_conditions as EC
+import logging
+import time
+from os import system, name
+import undetected_chromedriver as uc
+from typing import Dict, List
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import logging
+
+from housing.common import Listing
+
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36"
+URL = "https://www.homegate.ch/rent/real-estate/city-{location}/matching-list?ag={min_price}&ah={max_price}"
 
 
 def fetch_listings() -> List[Listing]:
@@ -35,95 +28,136 @@ def fetch_listings() -> List[Listing]:
     Each page contains at most 20 listings, hence we
     fetch multiple pages until we get to a page with no listings.
     """
-    listings: List[Listing] = []
-    """ driver = webdriver.Chrome() """
-    driver = uc.Chrome(headless=True,use_subprocess=False)
-    url = "https://www.homegate.ch/rent"
+    return []
 
-    for page_number in range(1, 10):
-        driver.execute_script(f"window.open('https://www.homegate.ch/rent','_blank');") # open page in new tab
-        time.sleep(20) # wait until page has loaded
-        driver.switch_to.window(window_name=driver.window_handles[0])   # switch to first tab
-        driver.close() # close first tab
-        driver.switch_to.window(window_name=driver.window_handles[0] )  # switch back to new tab
-        time.sleep(2)
-        driver.get("https://google.com")
-        time.sleep(2)
-        driver.get(url) # this should pass cloudflare captchas now
-        html_text = driver.get("https://www.homegate.ch/rent/real-estate/matching-list")
-        """ time.sleep(20) """
-        """ print("Done sleep") """
-        """ WebDriverWait(driver, 20).until( """
-        """     EC.frame_to_be_available_and_switch_to_it( """
-        """         ( """
-        """             By.CSS_SELECTOR, """
-        """             "iframe[title='Widget containing a Cloudflare security challenge']", """
-        """         ) """
-        """     ) """
-        """ ) """
-        """ print("Done wait 1") """
-        """ WebDriverWait(driver, 20).until( """
-        """     EC.element_to_be_clickable((By.CSS_SELECTOR, "label.ctp-checkbox-label")) """
-        """ ).click() """
-        """ print("Done wait 2") """
 
-        """ soup = BeautifulSoup(html_text, "html.parser") """
-        soup0 = BeautifulSoup(driver.page_source, "lxml")
-        soup1 = BeautifulSoup(driver.name, "lxml")
-        soup2 = BeautifulSoup(driver.title, "lxml")
+def scroll_down(driver):
+    SCROLL_PAUSE_TIME = 1
+    # Get scroll height
+    while True:
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        # Scroll down to bottom
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        count_for_page = 0
+        # Wait to load page
+        time.sleep(SCROLL_PAUSE_TIME)
 
-        """ if not soup.body: """
-        """     raise ValueError("Could not find body") """
-        print(soup0.body)
-        print(soup1.body)
-        print(soup2.body)
-
-        a_top = soup.body.find_all("a", {"data-test": "result-list-item"}, href=True)
-        result_list_items_regular = soup.body.find_all(
-            "div", {"data-test": "result-list-item"}
-        )
-        a_regular = [item.find("a", href=True) for item in result_list_items_regular]
-
-        for a in a_top + a_regular:
-            listing_id = a["href"].replace("/rent/", "")
-            listings.append(Listing(id=listing_id))
-            count_for_page += 1
-        if count_for_page == 0:
+        # Calculate new scroll height and compare with last scroll height
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
             break
+        last_height = new_height
+        time.sleep(2)
 
-    return listings
 
+def driverInit():
+    # setting options for undetected chrome driver
+    option = uc.ChromeOptions()
+    option.add_argument("--log-level=3")
+    option.add_argument("--disable-infobars")
 
-@housing.command()
-def main(
-    website: str = typer.Option(
-        ...,
-        "--website",
-    )
-) -> None:
-    print(f"{pendulum.now()}: checking for new listings on homegate.")
+    # option.add_argument("--headless")
+    option.add_argument("--disable-extensions")
+    prefs = {
+        "credentials_enable_service": False,
+        "profile.password_manager_enabled": False,
+        "profile.default_content_setting_values.notifications": 2,
+    }
+    option.add_experimental_option("prefs", prefs)
 
-    current_rows = read_rows(CSV_FILEPATH)
-
-    listings = fetch_listings()
-
-    new_row = Row(
-        timestamp=pendulum.now(),
-        num_listings=len(listings),
-        listings=listings,
-    )
-
-    if not current_rows:
-        write_row(filename=CSV_FILEPATH, row=new_row)
-        return
-
-    new_listings = get_new_listings(new_row=new_row, previous_row=current_rows[-1])
-    if new_listings:
-        print(f"Found new listings: {new_listings}")
-        write_row(filename=CSV_FILEPATH, row=new_row)
+    option.add_argument(f"user-agent={USER_AGENT}")
+    driverr = uc.Chrome(options=option)
+    return driverr
 
 
 if __name__ == "__main__":
-    housing()
+    location = input("Please enter location filter: ")
+    location = location.lower()
+    min_price = input("Please enter min price filter: ")
+    max_price = input("Please enter max price filter: ")
+
+    driver = driverInit()
+    driver.get(
+        URL.format(
+            location=location,
+            min_price=min_price,
+            max_price=max_price,
+        )
+    )
+    time.sleep(6)
+
+    driver.find_element(By.ID, "onetrust-accept-btn-handler").click()
+    scroll_down(driver)
+    raw_urls = driver.find_elements(
+        By.XPATH,
+        "(//div[@class='HgCardElevated_cardElevated_wE2UB']//a)",
+    )
+    listing_urls = []
+    for raw_url in raw_urls:
+        listing_urls.append(raw_url.get_attribute("href"))
+    print(listing_urls)
+
+    raw_prices = driver.find_elements(
+        By.XPATH,
+        "//span[@class='HgListingCard_price_sIIoV']",
+    )
+    prices = []
+    for item in raw_prices:
+        prices.append(item.text)
+    print(prices)
+
+    raw_rooms = driver.find_elements(
+        By.XPATH,
+        "//div[@class='HgListingRoomsLivingSpace_roomsLivingSpace_FiW9E']//span",
+    )
+    rooms = []
+    for item in raw_rooms:
+        rooms.append(item.text)
+    print(rooms)
+
+    raw_spaces = driver.find_elements(
+        By.XPATH,
+        "(//div[@class='HgListingRoomsLivingSpace_roomsLivingSpace_FiW9E']//span)[2]",
+    )
+    spaces = []
+    for item in raw_spaces:
+        spaces.append(item.text)
+    print(rooms)
+
+    raw_locations = driver.find_elements(
+        By.XPATH,
+        "//div[@class='HgListingCard_address_dbLZ8']//address",
+    )
+    locations = []
+    for item in raw_locations:
+        locations.append(item.text)
+    print(locations)
+
+    raw_titles = driver.find_elements(
+        By.XPATH,
+        "//p[@class='HgListingDescription_title_wfr04']",
+    )
+    titles = []
+    for item in raw_titles:
+        titles.append(item.text)
+    print(titles)
+
+    raw_details = driver.find_elements(
+        By.XPATH,
+        "//p[@class='HgListingDescription_large_Xytnw']",
+    )
+    details = []
+    for item in raw_details:
+        details.append(item.text)
+    """ print(details) """
+
+    # Ensure all lists have the same length
+    if len(listing_urls) == len(prices) == len(locations) == len(titles):
+        # Combine the data into an output list
+        output_list = []
+        for i in range(len(listing_urls)):
+            sublist = [listing_urls[i], prices[i], locations[i], titles[i]]
+            output_list.append(sublist)
+        print(output_list)
+
+    driver.quit()
