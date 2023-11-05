@@ -2,6 +2,7 @@ from typing import Generator
 import scrapy
 
 # Scrapy tutorial: https://towardsdatascience.com/web-scraping-with-scrapy-theoretical-understanding-f8639a25d9cd
+# XPath tutorial: https://www.blog.datahut.co/post/xpath-for-web-scraping-step-by-step-tutorial
 
 
 class FlatfoxSpider(scrapy.Spider):
@@ -19,7 +20,7 @@ class FlatfoxSpider(scrapy.Spider):
         """
         This can be used to generate the requests instead of using `start_urls`
         """
-        urls = ['http://example.com/']
+        urls = ["http://example.com/"]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
