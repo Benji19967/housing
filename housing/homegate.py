@@ -1,15 +1,16 @@
-from selenium.webdriver.common.by import By
-import time
 import logging
 import time
 from typing import List
-from selenium.webdriver.common.by import By
-import logging
+
 import selenium_utils
+from selenium.webdriver.common.by import By
 
 from housing.common import Listing
 
 URL = "https://www.homegate.ch/rent/real-estate/city-{location}/matching-list?ag={min_price}&ah={max_price}"
+
+
+logger = logging.getLogger(__name__)
 
 
 class HomegateListing(Listing):
@@ -32,6 +33,8 @@ def fetch_listings() -> List[Listing]:
     min_price = 100
     max_price = 10_000
 
+    logger.info(f"Fetching listings for {__name__}")
+
     driver = selenium_utils.driverInit()
     driver.get(
         URL.format(
@@ -52,7 +55,8 @@ def fetch_listings() -> List[Listing]:
     listing_urls = []
     for raw_url in raw_urls:
         listing_urls.append(raw_url.get_attribute("href"))
-    print(listing_urls)
+    logger.info(listing_urls)
+    # print(listing_urls)
 
     raw_prices = driver.find_elements(
         By.XPATH,
