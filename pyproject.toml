@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "housing"
 version = "0.1.0"
-description = "TDD best practices"
+description = "Data from the Swiss housing market"
 authors = [ "Benjamin Labrecque" ]
 packages = [
     { include = "housing" }
@@ -12,7 +12,6 @@ python = ">=3.9,<4.0"
 typer = "^0.7.0"
 beautifulsoup4 = "^4.12.0"
 requests = "2.28.2"
-black = "^23.1.0"
 pydantic = "^1.10.7"
 python-dotenv = "^1.0.0"
 rich = "^13.3.2"
@@ -27,6 +26,7 @@ selenium-stealth = "^1.0.6"
 undetected-chromedriver = "3.5.3"
 
 [tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
 pytest = "^7.2.1"
 mypy = "^1.1.1"
 isort = "^5.12.0"
