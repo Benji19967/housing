@@ -1,11 +1,11 @@
 import logging
-import time
 from typing import List
 
 import selenium_utils
 from selenium.webdriver.common.by import By
 
 from housing.common import Listing
+import time
 
 URL = "https://www.homegate.ch/rent/real-estate/city-{location}/matching-list?ag={min_price}&ah={max_price}"
 
