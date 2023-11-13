@@ -3,7 +3,7 @@ from enum import Enum
 import pendulum
 import typer
 
-from housing.common import Listing, Row, get_new_listings, read_rows, write_row
+from housing.common import Row, get_new_listings, read_rows, write_row
 from housing.config import settings
 from housing.homegate import fetch_listings as homegate_fetch_listings
 
@@ -12,26 +12,30 @@ CSV_FILEPATH = settings.HOMEGATE_CSV_FILEPATH
 housing = typer.Typer()
 
 
-class Website(Enum):
+class Source(Enum):
     HOMEGATE = "homegate"
     FLATFOX = "flatfox"
+
+    def __str__(self) -> str:
+        return str(self.value)
 
 
 @housing.command()
 def main(
-    website: Website = typer.Option(
+    source: Source = typer.Option(
         ...,
-        "--website",
-    )
+        "-s",
+        "--source",
+    ),
 ) -> None:
-    print(f"{pendulum.now()}: checking for new listings on {website}.")
+    print(f"{pendulum.now()}: checking for new listings on {source}.")
 
     current_rows = read_rows(CSV_FILEPATH)
 
-    if website == Website.HOMEGATE:
+    if source == Source.HOMEGATE:
         listings = homegate_fetch_listings()
     else:
-        raise ValueError(f"Website {website} not supported yet.")
+        raise ValueError(f"Source {source} not supported yet.")
 
     new_row = Row(
         timestamp=pendulum.now(),
