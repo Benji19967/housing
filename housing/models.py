@@ -4,7 +4,8 @@ from sqlmodel import Field, SQLModel
 
 
 class Agency(SQLModel, table=True):
-    name: Optional[str]
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: Optional[str] = Field(index=True)
     street: Optional[str]
     zipcode: Optional[str]
     city: Optional[str]
@@ -13,8 +14,7 @@ class Agency(SQLModel, table=True):
 
 class Listing(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    # TODO: Relationship
-    # agency: Optional[Agency]
+    agency_id: Optional[int] = Field(default=None, foreign_key="agency.id")
     alternative_reference: Optional[str]
     attributes: Optional[str]
     city: Optional[str]
