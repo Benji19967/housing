@@ -24,6 +24,7 @@ scrapy = "^2.11.0"
 scrapy-cloudflare-middleware = "^0.0.1"
 selenium-stealth = "^1.0.6"
 undetected-chromedriver = "3.5.3"
+sqlmodel = "^0.0.12"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
