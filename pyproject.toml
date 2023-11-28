@@ -26,6 +26,7 @@ selenium-stealth = "^1.0.6"
 undetected-chromedriver = "3.5.3"
 sqlmodel = "^0.0.12"
 fastapi = "^0.104.1"
+hypercorn = "^0.15.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"

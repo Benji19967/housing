@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from sqlmodel import Field, SQLModel
 
@@ -6,71 +6,71 @@ from sqlmodel import Field, SQLModel
 class Agency(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: Optional[str] = Field(index=True)
-    street: Optional[str]
-    zipcode: Optional[str]
-    city: Optional[str]
-    country: Optional[str]
+    street: Optional[str] = None
+    zipcode: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
 
 
 class Listing(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     agency_id: Optional[int] = Field(default=None, foreign_key="agency.id")
-    alternative_reference: Optional[str]
-    attributes: Optional[str]
-    city: Optional[str]
-    cover_image: Optional[int]
-    created: Optional[str]
-    description: Optional[str]
-    description_title: Optional[str]
-    # documents: Optional[List[str]]
-    floor: Optional[str]
-    # images: Optional[List[int]]
-    is_furnished: Optional[bool]
-    is_selling_furniture: Optional[int]
-    is_temporary: Optional[bool]
-    latitude: Optional[float]
-    live_viewing_url: Optional[str]
-    livingspace: Optional[int]
-    longitude: Optional[float]
-    moving_date: Optional[str]
-    moving_date_type: Optional[str]
-    number_of_rooms: Optional[str]
-    object_category: Optional[str]
-    object_type: Optional[str]
-    offer_type: Optional[str]
-    pitch_title: Optional[str]
-    pk: Optional[int]
-    price_display: Optional[int]
-    price_display_type: Optional[str]
-    price_unit: Optional[str]
-    public_address: Optional[str]
-    public_title: Optional[str]
-    published: Optional[str]
-    ref_house: Optional[str]
-    ref_object: Optional[str]
-    ref_property: Optional[str]
-    reference: Optional[str]
-    rent_charges: Optional[str]
-    rent_gross: Optional[str]
-    rent_net: Optional[str]
-    rent_title: Optional[str]
-    reserved: Optional[bool]
-    short_title: Optional[str]
-    short_url: Optional[str]
-    slug: Optional[str]
-    space_display: Optional[str]
-    status: Optional[str]
-    street: Optional[str]
-    submit_url: Optional[str]
-    surface_living: Optional[int]
-    surface_property: Optional[int]
-    surface_usable: Optional[int]
-    surface_usable_minimum: Optional[int]
-    tour_url: Optional[str]
-    url: Optional[str]
-    video_url: Optional[str]
-    volume: Optional[int]
-    website_url: Optional[str]
-    year_built: Optional[int]
-    year_renovated: Optional[int]
-    zipcode: Optional[bool]
+    alternative_reference: Optional[str] = None
+    attributes: Optional[str] = None
+    city: Optional[str] = None
+    cover_image: Optional[int] = None
+    created: Optional[str] = None
+    description: Optional[str] = None
+    description_title: Optional[str] = None
+    # documents: Optional[List[str]] = None
+    floor: Optional[str] = None
+    # images: Optional[List[int]] = None
+    is_furnished: Optional[bool] = None
+    is_selling_furniture: Optional[int] = None
+    is_temporary: Optional[bool] = None
+    latitude: Optional[float] = None
+    live_viewing_url: Optional[str] = None
+    livingspace: Optional[int] = None
+    longitude: Optional[float] = None
+    moving_date: Optional[str] = None
+    moving_date_type: Optional[str] = None
+    number_of_rooms: Optional[str] = None
+    object_category: Optional[str] = None
+    object_type: Optional[str] = None
+    offer_type: Optional[str] = None
+    pitch_title: Optional[str] = None
+    pk: Optional[int] = None
+    price_display: Optional[int] = None
+    price_display_type: Optional[str] = None
+    price_unit: Optional[str] = None
+    public_address: Optional[str] = None
+    public_title: Optional[str] = None
+    published: Optional[str] = None
+    ref_house: Optional[str] = None
+    ref_object: Optional[str] = None
+    ref_property: Optional[str] = None
+    reference: Optional[str] = None
+    rent_charges: Optional[str] = None
+    rent_gross: Optional[str] = None
+    rent_net: Optional[str] = None
+    rent_title: Optional[str] = None
+    reserved: Optional[bool] = None
+    short_title: Optional[str] = None
+    short_url: Optional[str] = None
+    slug: Optional[str] = None
+    space_display: Optional[str] = None
+    status: Optional[str] = None
+    street: Optional[str] = None
+    submit_url: Optional[str] = None
+    surface_living: Optional[int] = None
+    surface_property: Optional[int] = None
+    surface_usable: Optional[int] = None
+    surface_usable_minimum: Optional[int] = None
+    tour_url: Optional[str] = None
+    url: Optional[str] = None
+    video_url: Optional[str] = None
+    volume: Optional[int] = None
+    website_url: Optional[str] = None
+    year_built: Optional[int] = None
+    year_renovated: Optional[int] = None
+    zipcode: Optional[bool] = None

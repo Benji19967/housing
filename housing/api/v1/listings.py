@@ -12,5 +12,5 @@ router = APIRouter()
 async def listing(id: int) -> models.Listing:
     start = time.time()
 
-
     print(time.time() - start)
+    return models.Listing()
