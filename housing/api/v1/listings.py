@@ -1,10 +1,8 @@
-import time
-
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session
+from starlette.status import HTTP_404_NOT_FOUND
 
 from housing import models
-from housing.config import settings
 from housing.db import engine
 
 router = APIRouter()
@@ -15,5 +13,7 @@ async def listing(id: int) -> models.Listing:
     with Session(engine) as session:
         listing = session.get(models.Listing, id)
         if not listing:
-            raise HTTPException(status_code=404, detail="Listing not found")
+            raise HTTPException(
+                status_code=HTTP_404_NOT_FOUND, detail="Listing not found"
+            )
         return listing
