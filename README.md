@@ -1,5 +1,12 @@
 # Getting a pulse of the housing market in Switzerland
 
+
+## API Documentation
+
+In browser:
+
+`<host>:<port>/redoc`
+
 ## Web Scraping
 
 Web scraping can be performed by using a Browser Driver in headless mode, using tools
