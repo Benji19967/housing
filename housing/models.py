@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import List, Optional
 
+from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
 
 

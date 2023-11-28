@@ -27,7 +27,8 @@ undetected-chromedriver = "3.5.3"
 sqlmodel = "^0.0.12"
 fastapi = "^0.104.1"
 hypercorn = "^0.15.0"
-http-client = {path = "../http"}
+http-client = {path = "../http_client"}
+psycopg2 = "^2.9.9"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"

@@ -25,7 +25,7 @@ class Settings(BaseSettings):
         )
 
     class Config:
-        env_file = "housing/.env"
+        env_file = (".env", "housing/.env")
 
 
 settings = Settings()
