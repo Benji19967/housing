@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Optional, Tuple
 
 from http_client.http_client import HTTPClient
 
@@ -21,15 +21,16 @@ class ListingsClient:
         )
         self._http_client: HTTPClient = HTTPClient()
 
+    def _add_query_params(self, params: Optional[List[Tuple[str, str]]]) -> None:
+        pass
+
     def get(self, id: int) -> models.Listing:
         url = self._base_url + "/" + str(id)
         r = self._http_client.get(url)
         return models.Listing(**r.json())
 
     def list(self, offset: int = 0, limit: int = 100) -> List[models.Listing]:
-        # def list(self, offset: int = 0, limit: int = 100) -> models.Listings:
         # TODO: offset, limit
         url = self._base_url
         r = self._http_client.get(url)
-        # return models.Listings(**r.json())
         return [models.Listing(**listing) for listing in r.json()]
