@@ -5,9 +5,6 @@ import typer
 from rich import print as rich_print
 
 from housing.client import ListingsClient
-from housing.config import settings
-
-CSV_FILEPATH = settings.HOMEGATE_CSV_FILEPATH
 
 listings = typer.Typer(no_args_is_help=True)
 
@@ -38,13 +35,23 @@ def get(
 
 @listings.command()
 def list(
+    offset: int = typer.Option(
+        0,
+        "-o",
+        "--offset",
+    ),
+    limit: int = typer.Option(
+        100,
+        "-l",
+        "--limit",
+    ),
     format: Format = typer.Option(
         Format.RICH,
         "-f",
         "--format",
     ),
 ) -> None:
-    listings = ListingsClient().list()
+    listings = ListingsClient().list(offset=offset, limit=limit)
     if format == Format.RICH:
         rich_print(listings)
     elif format == Format.JSON:
