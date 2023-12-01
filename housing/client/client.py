@@ -21,25 +21,9 @@ class ListingsClient:
         )
         self._http_client: HTTPClient = HTTPClient()
 
-    def _formatted_query_params(
-        self, params: Optional[List[Tuple[str, Union[str, int]]]]
-    ) -> str:
-        """
-        Example params: [("offset": 0), ("limit": 100)]
-        Output: "?offset=0&limit=100"
-
-        """
-        query_params = []
-        if params:
-            for k, v in params:
-                query_params.append(f"{k}={v}")
-            return "?" + "&".join(query_params)
-        return ""
-
     def get(self, id: int) -> models.Listing:
         """
         Get Listings by id.
-
         """
         url = self._base_url + "/" + str(id)
         r = self._http_client.get(url)
@@ -47,10 +31,12 @@ class ListingsClient:
 
     def list(self, offset: int = 0, limit: int = 5) -> List[models.Listing]:
         """
-        Get a list of listings.
-
+        Get a list of Listings.
         """
         # TODO: make this cleaner
+        # TODO: would it be cleaner to use **kwargs?
+        #       pro: extensible
+        #       con: no suggestions and type hints
         url = self._base_url + self._formatted_query_params(
             [
                 ("offset", offset),
@@ -59,3 +45,17 @@ class ListingsClient:
         )
         r = self._http_client.get(url)
         return [models.Listing(**listing) for listing in r.json()]
+
+    def _formatted_query_params(
+        self, params: Optional[List[Tuple[str, Union[str, int]]]]
+    ) -> str:
+        """
+        Example
+
+        params: [("offset": 0), ("limit": 100)]
+        return: "?offset=0&limit=100"
+        """
+        if params:
+            query_params = [f"{k}={v}" for k, v in params]
+            return "?" + "&".join(query_params)
+        return ""
