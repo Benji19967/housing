@@ -11,3 +11,12 @@ start:
 
 health_check:
 	curl 0.0.0.0:${PORT}/v1/health_check
+
+image:
+	docker build -t housing/api .
+
+container:
+	docker run --rm -it --entrypoint bash housing/api
+
+mypy:
+	env/bin/mypy 

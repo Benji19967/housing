@@ -5,7 +5,7 @@ from housing.config import settings
 
 CSV_FILEPATH = settings.HOMEGATE_CSV_FILEPATH
 
-housing = typer.Typer(no_args_is_help=True)
+housing = typer.Typer(no_args_is_help=True, add_completion=False)
 
 housing.add_typer(listings.listings, name="listings")
 housing.add_typer(scrape.scrape, name="scrape")
